@@ -1,0 +1,37 @@
+version: '3.5'
+services:
+  traefik:
+    image: traefik
+    container_name: "traefik"
+    #restart: unless-stopped
+    networks:
+      - webgateway
+    command:
+      # - "--api.insecure=true"
+      # - "--providers.docker"
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.http.address=:80"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./conf/traefik.toml:/traefik.toml
+      - ./conf/acme.json:/acme.json
+
+# whoami:
+#   # A container that exposes an API to show its IP address
+#   image: traefik/whoami
+#   container_name: "whoami"
+#   labels:
+#     - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
+#   networks:
+#     - webgateway
+
+networks:
+  webgateway:
+    driver: bridge
